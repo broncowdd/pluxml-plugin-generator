@@ -222,7 +222,7 @@ a,a:visited,a:active{color:white;text-decoration: none;font-weight: bold}
 			<input type="submit" value="Créer le zip du plug-in"/>
 		</form>
 	</section>
-<footer>Get this opensource generator on <a href="">Github</a> - <a href="">Warriordudimanche</a></footer>
+<footer>Get this opensource generator on <a href="https://github.com/broncowdd/pluxml-plugin-generator">Github</a> - <a href="">Warriordudimanche</a></footer>
 
 <script>
 function hook(){ 
