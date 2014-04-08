@@ -178,7 +178,6 @@ if (!empty($_POST)){
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta charset="UTF-8">
     <title>WDD plugin template generator</title>
-    <link rel="shortcut icon" href="data:image/png;<?php echo $template['icon.png'];?>" />
     <!--[if IE]><script> document.createElement("article");document.createElement("aside");document.createElement("section");document.createElement("footer");</script> <![endif]-->
 <style>
 *, *:before, *:after {   -webkit-box-sizing: border-box;    -moz-box-sizing: border-box;    box-sizing: border-box; }
