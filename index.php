@@ -193,6 +193,7 @@ input[type=text]:hover,textarea:hover{background-color:#eee;}
 input[type=text]:focus,textarea:focus{background-color:#ddd;}
 input[type=submit]{background-color:#555;color:#ddd;cursor:pointer;}
 a,a:visited,a:active{color:white;text-decoration: none;font-weight: bold}
+form a{color:black;cursor:pointer;}
 </style>
 
 </head>
