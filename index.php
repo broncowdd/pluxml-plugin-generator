@@ -161,7 +161,7 @@ if (!empty($_POST)){
 		'temp/'.$post['#NOMPLUGIN'].'/lang/fr.php',
 		'temp/'.$post['#NOMPLUGIN'].'/config.php',
 		'temp/'.$post['#NOMPLUGIN'].'/icon.png',
-		'temp/'.$post['#NOMPLUGIN'].'/info.xml',
+		'temp/'.$post['#NOMPLUGIN'].'/infos.xml',
 		'temp/'.$post['#NOMPLUGIN'].'/'.$post['#NOMPLUGIN'].'.php',
 		);
 	create_zip($tozip, $filename, true); 
