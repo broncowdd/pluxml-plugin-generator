@@ -3,7 +3,7 @@
 pluxml plugin generator by bronco@warriodudimanche.net
 license: do want you want with it ^^
 http://warriordudimanche.net
-version: 0.1 
+version: 0.2 
 */
 
 if (!is_dir('temp')){mkdir('temp');}
@@ -109,9 +109,9 @@ class #NOMPLUGIN extends plxPlugin {
 
 /* Pense-bête:
  * Récuperer des parametres du fichier parameters.xml
- *	$plxPlugin->getParam("<nom du parametre>")
- *	$plxPlugin-> setParam ("param1", 12345, "numeric")
- *	$plxPlugin->saveParams()
+ *	$this->getParam("<nom du parametre>")
+ *	$this-> setParam ("param1", 12345, "numeric")
+ *	$this->saveParams()
  *
  *	plxUtils::strCheck($string) : sanitize string
  *
@@ -126,7 +126,7 @@ class #NOMPLUGIN extends plxPlugin {
  * Appel de HOOK
  *	eval($plxShow->callHook("ThemeEndHead","param1"))  ou eval($plxShow->callHook("ThemeEndHead",array("param1","param2")))
  *	ou $retour=$plxShow->callHook("ThemeEndHead","param1"));
- 
+ */
 ?>
 ',
 	);
@@ -134,12 +134,16 @@ class #NOMPLUGIN extends plxPlugin {
 if (!empty($_POST)){
 	$post=array_map('strip_tags',$_POST);
 	$post['#DATE']=@date('d/m/y');
-	mkdir('temp/'.$post['#NOMPLUGIN']);
-	mkdir('temp/'.$post['#NOMPLUGIN'].'/lang');
+
+	@mkdir('temp/'.$post['#NOMPLUGIN']);
+	@mkdir('temp/'.$post['#NOMPLUGIN'].'/lang');
 	$hooks=explode(' ',$post['hooks']);
 	unset($post['hooks']);
 	$post['#DECLARATIONHOOKS']='';
 	$post['#FONCTIONSHOOKS']='';
+	$uploaddir = 'temp/'.$post['#NOMPLUGIN'].'/';
+	$uploadfile = $uploaddir . 'icon.png';
+	if (preg_match('#.+\.png#i',$_FILES['icon']['name'])){move_uploaded_file($_FILES['icon']['tmp_name'], $uploadfile);}else{exit('pouf!!!!!!!!!!!!!!!!!!!');}
 	foreach ($hooks as $hook){
 		if (!empty($hook)){
 			$post['#DECLARATIONHOOKS'].="\t\t\$this->addHook('$hook','$hook');\n";
@@ -148,12 +152,13 @@ if (!empty($_POST)){
 	}
 	foreach ($template as $file=>$content){
 		if ($file!='icon.png'){
-			file_put_contents('temp/'.$post['#NOMPLUGIN'].'/'.$file,str_replace(array_keys($post),array_values($post),$content));}
+			file_put_contents($uploaddir.$file,str_replace(array_keys($post),array_values($post),$content));}
 		else{ 
-			file_put_contents('temp/'.$post['#NOMPLUGIN'].'/'.$file,base64_decode($content));
+			if (!is_file($uploaddir.$file)){file_put_contents($uploaddir.$file,base64_decode($content));}
 		}
 	}
-	rename('temp/'.$post['#NOMPLUGIN'].'/pluginfile.php','temp/'.$post['#NOMPLUGIN'].'/'.$post['#NOMPLUGIN'].'.php');
+
+	rename($uploaddir.'pluginfile.php',$uploaddir.$post['#NOMPLUGIN'].'.php');
 
 	// creation du zip
 	$filename='temp/'.$post['#NOMPLUGIN'].'.zip';
@@ -201,11 +206,13 @@ form a{color:black;cursor:pointer;}
 <body>
 	<header>WDD pluxml plugin template generator</header>
 	<section>
-		<form action="#" method="post">
+		<form action="#" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
 			<fieldset><legend>Informations</legend>
 				<li><label>Nom du plug-in</label><input type="text" name="#NOMPLUGIN"/></li>
 				<li><label>Description</label><textarea type="text" name="#DESCRIPTION"></textarea></li>
 				<li><label>Site web</label><input type="text" name="#SITE"/></li>
+				<li><label>Icône</label><input type="file" name="icon" value=""/></li>
 			</fieldset>
 			<fieldset><legend>Hooks</legend>
 				<li><label>Ajouter des hooks</label>
