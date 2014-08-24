@@ -64,7 +64,7 @@ $template=array(
 	<li><label>DESCRIPTION PARAMETRE 1 : 	<textarea style="width:100%;height:100px;" name="param1"><?php  echo plxUtils::strCheck($plxPlugin->getParam("param1")); ?></textarea></label></li>
 	<li><label>DESCRIPTION PARAMETRE 2 : 	<textarea style="width:100%;height:100px;" name="param2" ><?php echo plxUtils::strCheck($plxPlugin->getParam("param2")) ?></textarea></label></li>
 	<<br />
-	<input type="submit" name="submit" value="Enregistrer"
+	<input type="submit" name="submit" value="Enregistrer"/>
 </form>
 ',
 'lang/fr.php'=>'
