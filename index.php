@@ -3,7 +3,7 @@
 pluxml plugin generator by bronco@warriodudimanche.net
 license: do want you want with it ^^
 http://warriordudimanche.net
-version: 0.2 
+version: 0.3 
 */
 
 if (!is_dir('temp')){mkdir('temp');}
@@ -40,7 +40,7 @@ $template=array(
 'infos.xml'=>'<?xml version="1.0" encoding="UTF-8"?>
 <document>
 <title><![CDATA[#NOMPLUGIN]]></title>
-<author><![CDATA[Bronco]]></author>
+<author><![CDATA[#AUTEUR]]></author>
 <version>1.0</version>
 <date>#DATE</date>
 <site>#SITE</site>
@@ -63,7 +63,7 @@ $template=array(
 <form action="parametres_plugin.php?p=#NOMPLUGIN" method="post" style="font-size:16px;">
 	<li><label>DESCRIPTION PARAMETRE 1 : 	<textarea style="width:100%;height:100px;" name="param1"><?php  echo plxUtils::strCheck($plxPlugin->getParam("param1")); ?></textarea></label></li>
 	<li><label>DESCRIPTION PARAMETRE 2 : 	<textarea style="width:100%;height:100px;" name="param2" ><?php echo plxUtils::strCheck($plxPlugin->getParam("param2")) ?></textarea></label></li>
-	<<br />
+	<br />
 	<input type="submit" name="submit" value="Enregistrer"/>
 </form>
 ',
@@ -80,21 +80,21 @@ class #NOMPLUGIN extends plxPlugin {
 		# appel du constructeur de la classe plxPlugin (obligatoire)
 		parent::__construct($default_lang);
 
-		# limite l\'accès à l\'écran d\'administration du plugin
+		# limite l\'acces a l\'ecran d\'administration du plugin
 		# PROFIL_ADMIN , PROFIL_MANAGER , PROFIL_MODERATOR , PROFIL_EDITOR , PROFIL_WRITER
 		$this->setConfigProfil(PROFIL_ADMIN);
 		
-		# Déclaration d\'un hook (existant ou nouveau)
+		# Declaration d\'un hook (existant ou nouveau)
 #DECLARATIONHOOKS
 		
 	}
 
-	# Activation / désactivation
+	# Activation / desactivation
 	public function OnActivate() {
-		# code à exécuter à l’activation du plugin
+		# code à executer à l’activation du plugin
 	}
 	public function OnDeactivate() {
-		# code à exécuter à la désactivation du plugin
+		# code à executer à la désactivation du plugin
 	}
 	
 	# HOOKS
@@ -107,7 +107,7 @@ class #NOMPLUGIN extends plxPlugin {
 
 
 
-/* Pense-bête:
+/* Pense-bete:
  * Récuperer des parametres du fichier parameters.xml
  *	$this->getParam("<nom du parametre>")
  *	$this-> setParam ("param1", 12345, "numeric")
@@ -143,7 +143,11 @@ if (!empty($_POST)){
 	$post['#FONCTIONSHOOKS']='';
 	$uploaddir = 'temp/'.$post['#NOMPLUGIN'].'/';
 	$uploadfile = $uploaddir . 'icon.png';
-	if (preg_match('#.+\.png#i',$_FILES['icon']['name'])){move_uploaded_file($_FILES['icon']['tmp_name'], $uploadfile);}else{exit('pouf!!!!!!!!!!!!!!!!!!!');}
+	if (!empty($_FILES['icon']['name'])){
+		if (preg_match('#.+\.png#i',$_FILES['icon']['name'])){move_uploaded_file($_FILES['icon']['tmp_name'], $uploadfile);}else{exit('pouf!!!!!!!!!!!!!!!!!!!');}
+	}else{
+		file_put_contents($uploadfile,base64_decode ($template['icon.png']));
+	}
 	foreach ($hooks as $hook){
 		if (!empty($hook)){
 			$post['#DECLARATIONHOOKS'].="\t\t\$this->addHook('$hook','$hook');\n";
@@ -176,7 +180,6 @@ if (!empty($_POST)){
 }else{
 
 ?>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" charset="UTF-8">
 <head>
@@ -210,12 +213,14 @@ form a{color:black;cursor:pointer;}
 			<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
 			<fieldset><legend>Informations</legend>
 				<li><label>Nom du plug-in</label><input type="text" name="#NOMPLUGIN"/></li>
+				<li><label>Auteur</label><input type="text" name="#AUTEUR"/></li>				
 				<li><label>Description</label><textarea type="text" name="#DESCRIPTION"></textarea></li>
 				<li><label>Site web</label><input type="text" name="#SITE"/></li>
 				<li><label>Icône</label><input type="file" name="icon" value=""/></li>
 			</fieldset>
 			<fieldset><legend>Hooks</legend>
 				<li><label>Ajouter des hooks</label>
+<small>Ajoutez les hooks standards par le bouton ajouter ou tapez les vôtres directement ci-dessous</small><br/>
 					<select id="addhook" name="addhook" value=''/>
 						<?php
 							foreach ($hooks as $hook){
@@ -225,7 +230,7 @@ form a{color:black;cursor:pointer;}
 					</select>
 					<a  onClick="hook()">Ajouter</a>
 				</li>
-				<li><input id="hooks" type="text" name="hooks"/> </li>
+				<li><textarea id="hooks" name="hooks"></textarea> </li>
 			</fieldset>
 			<input type="submit" value="Créer le zip du plug-in"/>
 		</form>
