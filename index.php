@@ -3,7 +3,7 @@
 pluxml plugin generator by bronco@warriodudimanche.net
 license: do want you want with it ^^
 http://warriordudimanche.net
-version: 0.3 
+version: 0.4 
 */
 
 if (!is_dir('temp')){mkdir('temp');}
@@ -37,6 +37,7 @@ function create_zip($files = array(),$destination = '',$overwrite = false) {
 
 $hooks=explode(',','AdminArticleContent,AdminArticleFoot,AdminArticleInitData,AdminArticleParseData,AdminArticlePostData,AdminArticlePrepend,AdminArticlePreview,AdminArticleSidebar,AdminArticleTop,AdminAuthPrepend,AdminAuthEndHead,AdminAuthTop,AdminAuth,AdminAuthEndBody,AdminCategoryPrepend,AdminCategoryTop,AdminCategory,AdminCategoryFoot,AdminCategoriesPrepend,AdminCategoriesTop,AdminCategoriesFoot,AdminCommentTop,AdminComment,AdminCommentFoot,AdminCommentsPrepend,AdminCommentsTop,AdminCommentsPagination,AdminCommentsFoot	,AdminCommentNewPrepend,AdminCommentNewTop,AdminCommentNew,AdminCommentNewList,AdminCommentNewFoot	,AdminFootEndBody	,AdminIndexPrepend,AdminIndexTop,AdminIndexPagination,AdminIndexFoot	,AdminMediasPrepend,AdminMediasTop,AdminMediasFoot,AdminMediasUpload,AdminSettingsDisplayTop,AdminSettingsDisplay,AdminSettingsDisplayFoot,AdminSettingsAdvancedTop,AdminSettingsAdvanced,AdminSettingsAdvancedFoot,AdminSettingsBaseTop,AdminSettingsBase,AdminSettingsBaseFoot,AdminSettingsEdittplTop,AdminSettingsEdittpl,AdminSettingsEdittplFoot,AdminSettingsInfos,AdminSettingsPluginsTop,AdminSettingsPluginsFoot,AdminSettingsUsersTop,AdminSettingsUsersFoot,AdminPrepend,AdminProfilPrepend,AdminProfilTop,AdminProfil,AdminProfilFoot,AdminStaticPrepend,AdminStaticTop,AdminStatic,AdminStaticFoot,AdminStaticsPrepend,AdminStaticsTop,AdminStaticsFoot,AdminTopEndHead,AdminTopMenus,AdminTopBottom,AdminUserPrepend,AdminUserTop,AdminUser,AdminUserFoot,plxAdminConstruct,plxAdminEditConfiguration,plxAdminHtaccess,plxAdminEditProfil ,plxAdminEditProfilXml,plxAdminEditUsersUpdate,plxAdminEditUsersXml,plxAdminEditUser,plxAdminEditCategoriesNew,plxAdminEditCategoriesUpdate,plxAdminEditCategoriesXml,plxAdminEditCategorie,plxAdminEditStatiquesUpdate,plxAdminEditStatiquesXml,plxAdminEditStatique,plxAdminEditArticle ,plxAdminEditArticleXml,plxFeedConstruct,plxFeedPreChauffageBegin ,plxFeedPreChauffageEnd,plxFeedDemarrageBegin ,plxFeedDemarrageEnd,plxFeedRssArticlesXml,plxFeedRssCommentsXml,plxFeedAdminCommentsXml,plxMotorConstruct,plxMotorPreChauffageBegin ,plxMotorPreChauffageEnd,plxMotorDemarrageBegin ,plxMotorDemarrageEnd,plxMotorDemarrageNewCommentaire,plxMotorDemarrageCommentSessionMessage,plxMotorGetCategories,plxMotorGetStatiques,plxMotorGetUsers,plxMotorParseArticle,plxMotorParseCommentaire,plxMotorNewCommentaire ,plxMotorAddCommentaire ,plxMotorAddCommentaireXml,plxMotorSendDownload ,plxShowConstruct,plxShowPageTitle ,plxShowMeta ,plxShowLastCatList ,plxShowArtTags ,plxShowArtFeed ,plxShowLastArtList ,plxShowComFeed ,plxShowLastComList ,plxShowStaticListBegin ,plxShowStaticListEnd ,plxShowStaticContent,plxShowStaticInclude ,plxShowPagination ,plxShowTagList ,plxShowArchList ,plxShowPageBlog ,plxShowTagFeed,plxShowTemplateCss ,plxShowCapchaQ ,plxShowCapchaR ,Index,IndexBegin,IndexEnd,SitemapStatics,SitemapCategories,SitemapArticles,SitemapBegin,SitemapEnd,FeedBegin,FeedEnd,ThemeEndHead,ThemeEndBody');
 $template=array(
+'admin.php'=>"<?php if(!defined('PLX_ROOT')) exit; ?><h1>Page d'administration de #NOMPLUGIN</h1>",
 'infos.xml'=>'<?xml version="1.0" encoding="UTF-8"?>
 <document>
 <title><![CDATA[#NOMPLUGIN]]></title>
@@ -136,18 +137,21 @@ if (!empty($_POST)){
 	$post['#DATE']=@date('d/m/y');
 
 	@mkdir('temp/'.$post['#NOMPLUGIN']);
-	@mkdir('temp/'.$post['#NOMPLUGIN'].'/lang');
+
+	if (isset($_POST['fr_php'])){
+		@mkdir('temp/'.$post['#NOMPLUGIN'].'/lang');
+		$_POST['fr.php']='lang/'.$_POST['fr.php'];
+	}
+
 	$hooks=explode(' ',$post['hooks']);
 	unset($post['hooks']);
 	$post['#DECLARATIONHOOKS']='';
 	$post['#FONCTIONSHOOKS']='';
 	$uploaddir = 'temp/'.$post['#NOMPLUGIN'].'/';
 	$uploadfile = $uploaddir . 'icon.png';
-	if (!empty($_FILES['icon']['name'])){
-		if (preg_match('#.+\.png#i',$_FILES['icon']['name'])){move_uploaded_file($_FILES['icon']['tmp_name'], $uploadfile);}else{exit('pouf!!!!!!!!!!!!!!!!!!!');}
-	}else{
-		file_put_contents($uploadfile,base64_decode ($template['icon.png']));
-	}
+	
+		if (preg_match('#.+\.png#i',$_FILES['icon']['name'])){move_uploaded_file($_FILES['icon']['tmp_name'], $uploadfile);}
+	
 	foreach ($hooks as $hook){
 		if (!empty($hook)){
 			$post['#DECLARATIONHOOKS'].="\t\t\$this->addHook('$hook','$hook');\n";
@@ -156,8 +160,15 @@ if (!empty($_POST)){
 	}
 	foreach ($template as $file=>$content){
 		if ($file!='icon.png'){
-			file_put_contents($uploaddir.$file,str_replace(array_keys($post),array_values($post),$content));}
-		else{ 
+			echo '<li>';
+			var_dump($file);
+			var_dump($_POST[str_replace('.','_',basename($file))]);
+			if (!empty($_POST[str_replace('.','_',basename($file))])){
+				echo 'YES ';
+				var_dump(file_put_contents($uploaddir.$file,str_replace(array_keys($post),array_values($post),$content)));
+			}else echo 'no !';
+			echo '</li>';
+		}else{ 
 			if (!is_file($uploaddir.$file)){file_put_contents($uploaddir.$file,base64_decode($content));}
 		}
 	}
@@ -168,13 +179,16 @@ if (!empty($_POST)){
 	$filename='temp/'.$post['#NOMPLUGIN'].'.zip';
 	$tozip=array(
 		'temp/'.$post['#NOMPLUGIN'].'/lang/fr.php',
+		'temp/'.$post['#NOMPLUGIN'].'/admin.php',
 		'temp/'.$post['#NOMPLUGIN'].'/config.php',
 		'temp/'.$post['#NOMPLUGIN'].'/icon.png',
 		'temp/'.$post['#NOMPLUGIN'].'/infos.xml',
 		'temp/'.$post['#NOMPLUGIN'].'/'.$post['#NOMPLUGIN'].'.php',
 		);
 	create_zip($tozip, $filename, true); 
-	
+	foreach ($tozip as $file){@unlink($file);}
+	rmdir('temp/'.$post['#NOMPLUGIN'].'/lang');
+
 	header('location: temp/'.$post['#NOMPLUGIN'].'.zip');
 
 }else{
@@ -199,6 +213,7 @@ textarea{min-height:100px;}
 input,textarea{width:100%;border:1px solid #333;padding:3px;font-size:18px;}
 input[type=text]:hover,textarea:hover{background-color:#eee;}
 input[type=text]:focus,textarea:focus{background-color:#ddd;}
+input[type=checkbox]{display:inline;width:auto;cursor: pointer}
 input[type=submit]{background-color:#555;color:#ddd;cursor:pointer;}
 a,a:visited,a:active{color:white;text-decoration: none;font-weight: bold}
 form a{color:black;cursor:pointer;}
@@ -207,7 +222,7 @@ form a{color:black;cursor:pointer;}
 </head>
 
 <body>
-	<header>WDD pluxml plugin template generator</header>
+	<header>WDD pluxml plugin template generator v0.4</header>
 	<section>
 		<form action="#" method="post" enctype="multipart/form-data">
 			<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
@@ -220,7 +235,7 @@ form a{color:black;cursor:pointer;}
 			</fieldset>
 			<fieldset><legend>Hooks</legend>
 				<li><label>Ajouter des hooks</label>
-<small>Ajoutez les hooks standards par le bouton ajouter ou tapez les vôtres directement ci-dessous</small><br/>
+
 					<select id="addhook" name="addhook" value=''/>
 						<?php
 							foreach ($hooks as $hook){
@@ -229,9 +244,17 @@ form a{color:black;cursor:pointer;}
 						?>
 					</select>
 					<a  onClick="hook()">Ajouter</a>
-				</li>
+				</li><small>Ajoutez les hooks standards par le bouton ajouter ou tapez les vôtres directement ci-dessous</small><br/>
 				<li><textarea id="hooks" name="hooks"></textarea> </li>
 			</fieldset>
+
+			<fieldset><legend>Options</legend>
+				<li><label><input type="checkbox" name="config_php"/> Page de configuration</label></li>
+				<li><label><input type="checkbox" name="admin_php"/> Page d'administration</label></li>		
+				<li><label><input type="checkbox" name="fr_php"/> Dossier langues</label></li>		
+			</fieldset>
+			<input type="hidden" name="pluginfile_php" value="1"/>
+			<input type="hidden" name="infos_xml" value="1"/>
 			<input type="submit" value="Créer le zip du plug-in"/>
 		</form>
 	</section>
