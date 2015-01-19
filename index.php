@@ -84,6 +84,7 @@ class #NOMPLUGIN extends plxPlugin {
 		# limite l\'acces a l\'ecran d\'administration du plugin
 		# PROFIL_ADMIN , PROFIL_MANAGER , PROFIL_MODERATOR , PROFIL_EDITOR , PROFIL_WRITER
 		$this->setConfigProfil(PROFIL_ADMIN);
+		$this->setAdminProfil(PROFIL_ADMIN);
 		
 		# Declaration d\'un hook (existant ou nouveau)
 #DECLARATIONHOOKS
