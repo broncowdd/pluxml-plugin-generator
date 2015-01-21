@@ -52,8 +52,8 @@ $template=array(
 'config.php'=>'<?php if(!defined("PLX_ROOT")) exit; ?>
 <?php 
 	if(!empty($_POST)) {
-		$plxPlugin->setParam("param1", $_POST["param1"], "string");
-		$plxPlugin->setParam("param2", $_POST["param2"], "string");
+		$plxPlugin->setParam("param1", plxUtils::strCheck($_POST["param1"]), "string");
+		$plxPlugin->setParam("param2", plxUtils::strCheck($_POST["param2"]), "string");
 		$plxPlugin->saveParams();
 		header("Location: parametres_plugin.php?p=#NOMPLUGIN");
 		exit;
@@ -62,8 +62,8 @@ $template=array(
 <h2><?php $plxPlugin->lang("L_TITLE") ?></h2>
 <p><?php $plxPlugin->lang("L_DESCRIPTION") ?></p>
 <form action="parametres_plugin.php?p=#NOMPLUGIN" method="post" style="font-size:16px;">
-	<li><label>DESCRIPTION PARAMETRE 1 : 	<textarea style="width:100%;height:100px;" name="param1"><?php  echo plxUtils::strCheck($plxPlugin->getParam("param1")); ?></textarea></label></li>
-	<li><label>DESCRIPTION PARAMETRE 2 : 	<textarea style="width:100%;height:100px;" name="param2" ><?php echo plxUtils::strCheck($plxPlugin->getParam("param2")) ?></textarea></label></li>
+	<li><label>DESCRIPTION PARAMETRE 1 : 	<textarea style="width:100%;height:100px;" name="param1"><?php  echo $plxPlugin->getParam("param1"); ?></textarea></label></li>
+	<li><label>DESCRIPTION PARAMETRE 2 : 	<textarea style="width:100%;height:100px;" name="param2" ><?php echo $plxPlugin->getParam("param2") ?></textarea></label></li>
 	<br />
 	<input type="submit" name="submit" value="Enregistrer"/>
 </form>
