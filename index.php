@@ -50,7 +50,7 @@ if(!defined('PLX_ROOT')) exit; ?>
 <h1>Page d'administration de #NOMPLUGIN</h1>",
 
 
-'infos.xml'=>'<?xml version="#VERSION" encoding="UTF-8"?>
+'infos.xml'=>'<?xml version="1.0" encoding="UTF-8"?>
 <document>
 <title><![CDATA[#NOMPLUGIN]]></title>
 <author><![CDATA[#AUTEUR]]></author>
