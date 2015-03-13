@@ -54,7 +54,7 @@ if(!defined('PLX_ROOT')) exit; ?>
 <document>
 <title><![CDATA[#NOMPLUGIN]]></title>
 <author><![CDATA[#AUTEUR]]></author>
-<version>1.0</version>
+<version>#VERSION</version>
 <date>#DATE</date>
 <site>#SITE</site>
 <description><![CDATA[#DESCRIPTION]]></description>
