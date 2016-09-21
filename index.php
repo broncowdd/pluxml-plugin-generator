@@ -159,7 +159,6 @@ class #NOMPLUGIN extends plxPlugin {
  * PLX_CORE
  * PLX_ROOT
  * PLX_CHARSET
- * PLX_CONFIG_PATH
  * PLX_PLUGINS
  * PLX_CONFIG_PATH
  * PLX_ADMIN (true si on est dans admin)
@@ -210,8 +209,8 @@ if (!empty($_POST)){
 				}if ($type=='boolean'){
 					$input="
 					\t<select style=\"width:100%;\" name=\"$name\" value=\"<?php echo \$plxPlugin->getParam(\"$name\");?>\">
-					<option value=\"0\" <?php \$plxPlugin->getParam(\"$name\")==\"0\" ? echo \"selected\";?>><?php echo \$plxPlugin->lang(\"L_NO\");?></option>
-					<option value=\"1\" <?php \$plxPlugin->getParam(\"$name\")==\"1\" ? echo \"selected\";?>><?php echo \$plxPlugin->lang(\"L_YES\");?></option></select>";
+					<option value=\"0\" <?php \$plxPlugin->getParam(\"$name\")==\"0\" ? \"selected\":\"\"?>><?php echo \$plxPlugin->lang(\"L_NO\");?></option>
+					<option value=\"1\" <?php \$plxPlugin->getParam(\"$name\")==\"1\" ? \"selected\":\"\"?>><?php echo \$plxPlugin->lang(\"L_YES\");?></option></select>";
 				}
 				$post['#PARAM'].="\t<li>\n\t\t<label>$name : \n\t\t$input\n\t\t</label>\n\t</li>\n";
 				$post['#SETPARAM'].="\t\t\$plxPlugin->setParam(\"$name\", plxUtils::strCheck($postname), \"$type\");\n";
