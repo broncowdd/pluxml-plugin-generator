@@ -178,6 +178,7 @@ if (!empty($_POST)){
 	$post['#DATE']=@date('d/m/y');
 	$post['#ADMINACCESSCODE']='';
 	$post['#CONFIGACCESSCODE']='';
+	$post['#NOMPLUGIN']=preg_replace('#[^a-zA-Z0-9_]#','_',$post['#NOMPLUGIN']);
 	@mkdir('temp/'.$post['#NOMPLUGIN']);
 	if (isset($post['admin_php'])){
 		$post['#ADMINACCESSCODE']='
