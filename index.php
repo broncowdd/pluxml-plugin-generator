@@ -3,7 +3,7 @@
 pluxml plugin generator by bronco@warriodudimanche.net
 license: do want you want with it ^^
 http://warriordudimanche.net
-version: 0.7 
+version: 0.8 
 */
 
 if (!is_dir('temp')){mkdir('temp');}
@@ -11,27 +11,39 @@ if (!is_dir('temp')){mkdir('temp');}
 // suppr les fichiers temp précédents
 $temp=glob('temp/*.*');foreach ($temp as $file){unlink($file);}
 function deep_strip_tags($var){if (is_string($var)){return strip_tags($var);}if (is_array($var)){return array_map('deep_strip_tags',$var);}return $var; }
-function create_zip($files = array(),$destination = '',$overwrite = false) {  
-	if(file_exists($destination) && !$overwrite) { return false; } 
-    $valid_files = array();  
-    if(is_array($files)) {  
-        foreach($files as $file) {  
-            if(file_exists($file)) {  
-                $valid_files[] = $file;  
-            }  
-        }  
-    }  
-    if(count($valid_files)) {  
-        $zip = new ZipArchive();  
-        if($zip->open($destination,$overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {  
-            return false;  
-        }  
-        foreach($valid_files as $file) {  
-            $zip->addFile($file,str_replace('temp/','',$file));  
-        }  	        
-        $zip->close();  	          
-        return file_exists($destination);  
-    }else{ return false; }  
+function create_zip($source, $destination)
+{
+  if (!extension_loaded('zip') || !file_exists($source)) {
+    return false;
+  }
+
+  $zip = new ZipArchive();
+  if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+    return false;
+  }
+
+  $source = str_replace('', '/', realpath($source));
+
+  if (is_dir($source) === true){
+    $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+    foreach ($files as $file){
+      $file = str_replace('', '/', $file);
+      // Ignore "." and ".." folders
+      if( in_array(substr($file, strrpos($file, '/')+1), array('.', '..')) )
+        continue;
+      $file = realpath($file);
+      if (is_dir($file) === true){
+        $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
+      }elseif (is_file($file) === true){
+        $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+      }
+    }
+  }
+  else if (is_file($source) === true){
+    $zip->addFromString(basename($source), file_get_contents($source));
+  }
+
+  return $zip->close();
 }
 
 
@@ -224,7 +236,7 @@ if (!empty($_POST)){
 
 	if (isset($post['fr_php'])){
 		@mkdir('temp/'.$post['#NOMPLUGIN'].'/lang');
-		$post['fr.php']='lang/'.$post['fr.php'];
+		$post['fr.php']='lang/fr.php';
 	}
 	if (!empty($post['img'])){
 		@mkdir('temp/'.$post['#NOMPLUGIN'].'/img');
@@ -264,6 +276,9 @@ if (!empty($_POST)){
 			$post['#FONCTIONSHOOKS'].="\n\t########################################\n\t# $hook\n\t########################################\n\t# Description:\n\tpublic function $hook(){\n\n\t}\n";
 		}
 	}
+
+
+
 	foreach ($template as $file=>$content){
 		if ($file!='icon.png'){
 			$content=trim($content);				
@@ -290,7 +305,7 @@ if (!empty($_POST)){
 		'temp/'.$post['#NOMPLUGIN'].'/static.php',
 		'temp/'.$post['#NOMPLUGIN'].'/'.$post['#NOMPLUGIN'].'.php',
 		);
-	create_zip($tozip, $filename, true); 
+	create_zip('temp/'.$post['#NOMPLUGIN'], $filename, true);
 	foreach ($tozip as $file){@unlink($file);}
 	rmdir('temp/'.$post['#NOMPLUGIN'].'/lang');
 
