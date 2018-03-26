@@ -3,13 +3,23 @@
 pluxml plugin generator by bronco@warriodudimanche.net
 license: do want you want with it ^^
 http://warriordudimanche.net
+version: 0.9 
 */
-$version = 0.8;
+define('VERSION','0.9');
 if (!is_dir('temp')){mkdir('temp');}
 
 // suppr les fichiers temp précédents
 $temp=glob('temp/*.*');foreach ($temp as $file){unlink($file);}
-function deep_strip_tags($var){if (is_string($var)){return strip_tags($var);}if (is_array($var)){return array_map('deep_strip_tags',$var);}return $var; }
+function deep_strip_tags($data){
+		if (is_string($data)){
+			$data=strip_tags($data);
+			$data=str_replace(array('/','\\','[',']','{','}',',',';',':','$','='),'',htmlentities(strip_tags($data), ENT_QUOTES));
+			return $data;
+		}
+		if (is_array($data)){
+			return array_map('deep_strip_tags',$data);
+		}
+	} 
 function create_zip($source, $destination)
 {
   if (!extension_loaded('zip') || !file_exists($source)) {
@@ -63,20 +73,19 @@ if(!defined('PLX_ROOT')) exit; ?>
 
 'infos.xml'=>'<?xml version="1.0" encoding="UTF-8"?>
 <document>
-	<title><![CDATA[#NOMPLUGIN]]></title>
-	<author><![CDATA[#AUTEUR]]></author>
-	<version>#VERSION</version>
-	<date>#DATE</date>
-	<site>#SITE</site>
-	<description><![CDATA[#DESCRIPTION]]></description>
+<title><![CDATA[#NOMPLUGIN]]></title>
+<author><![CDATA[#AUTEUR]]></author>
+<version>#VERSION</version>
+<date>#DATE</date>
+<site>#SITE</site>
+<description><![CDATA[#DESCRIPTION]]></description>
 </document>
 ',
 
 
 'icon.png'=>'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',
 
-'config.php'=>'<?php 
-/**
+'config.php'=>'<?php /**
 * Plugin #NOMPLUGIN - config page
 *
 * @package	PLX
@@ -93,7 +102,11 @@ if(!defined("PLX_ROOT")) exit; ?>
 		exit;
 	}
 ?>
-<h2><?php $plxPlugin->lang("L_TITLE") ?></h2>
+<style>
+	h2 *{vertical-align:middle;}
+	section li{display:inline-block;list-style: none;padding:15px;margin:15px;border:1px solid rgba(0,0,0,0.3);border-radius: 3px}
+</style>
+<h2><img src="<?php echo PLX_PLUGINS;?>#NOMPLUGIN/icon.png"/><?php $plxPlugin->lang("L_TITLE") ?></h2>
 <p><?php $plxPlugin->lang("L_DESCRIPTION") ?></p>
 <form action="parametres_plugin.php?p=#NOMPLUGIN" method="post" >
 #PARAM
@@ -109,6 +122,7 @@ if(!defined("PLX_ROOT")) exit; ?>
 		"L_DESCRIPTION"=>"#DESCRIPTION",
 		"L_NO"=>"Non",
 		"L_YES"=>"Oui",
+#MORE
 	);
 ',
 
@@ -123,6 +137,7 @@ if(!defined("PLX_ROOT")) exit; ?>
 * @author #AUTEUR
 **/
 class #NOMPLUGIN extends plxPlugin {
+#PROPERTIES
 	public function __construct($default_lang) {
 		# appel du constructeur de la classe plxPlugin (obligatoire)
 		parent::__construct($default_lang);
@@ -130,6 +145,9 @@ class #NOMPLUGIN extends plxPlugin {
 		#ADMINACCESSCODE
 		#CONFIGACCESSCODE
 		
+#GETCONFIG
+
+
 		# Declaration d\'un hook (existant ou nouveau)
 #DECLARATIONHOOKS
 		
@@ -206,8 +224,13 @@ if (!empty($_POST)){
 		$this->setConfigProfil(PROFIL_ADMIN);
 		';
 		if (isset($post['param'])){
+
 			$post['#PARAM']='';
 			$post['#SETPARAM']='';
+			$post['#MORE']='';
+			$post['#PROPERTIES']='';
+			$post['#GETCONFIG']='';
+
 			preg_match_all('#(?P<name>[^(]*?)\((?P<type>integer|boolean|string]*?)\)#i',$post['param'],$r);
 			unset($post['param']);
 			foreach ($r[0] as $key => $value) {
@@ -215,17 +238,20 @@ if (!empty($_POST)){
 				$type=trim($r['type'][$key]);
 				$postname='$_POST["'.$name.'"]';
 				if ($type=='string'){
-					$input="\t<input type=\"text\" style=\"width:100%;\" name=\"$name\" value=\"<?php echo \$plxPlugin->getParam(\"$name\");?>\"/>";
+					$input="\t<input type=\"text\" name=\"$name\" value=\"<?php echo \$plxPlugin->getParam(\"$name\");?>\"/>";
 				}elseif ($type=='integer'){
-					$input="\t<input type=\"numeric\" style=\"width:100%;\" name=\"$name\" value=\"<?php echo \$plxPlugin->getParam(\"$name\");?>\"/>";
+					$input="\t<input type=\"numeric\" name=\"$name\" value=\"<?php echo \$plxPlugin->getParam(\"$name\");?>\"/>";
 				}if ($type=='boolean'){
 					$input="
-					\t<select style=\"width:100%;\" name=\"$name\" value=\"<?php echo \$plxPlugin->getParam(\"$name\");?>\">
-					<option value=\"0\" <?php \$plxPlugin->getParam(\"$name\")==\"0\" ? \"selected\":\"\"?>><?php echo \$plxPlugin->lang(\"L_NO\");?></option>
-					<option value=\"1\" <?php \$plxPlugin->getParam(\"$name\")==\"1\" ? \"selected\":\"\"?>><?php echo \$plxPlugin->lang(\"L_YES\");?></option></select>";
+					\t<select name=\"$name\" value=\"<?php echo \$plxPlugin->getParam(\"$name\");?>\">
+					<option value=\"0\"  <?php if ($plxPlugin->getParam(\"$name\")==\"0\")  echo 'selected'?>><?php echo \$plxPlugin->lang(\"L_NO\");?></option>
+					<option value=\"1\" <?php  if ($plxPlugin->getParam(\"$name\")==\"1\") echo 'selected'?>?>><?php echo \$plxPlugin->lang(\"L_YES\");?></option></select>";
 				}
-				$post['#PARAM'].="\t<li>\n\t\t<label>$name : \n\t\t$input\n\t\t</label>\n\t</li>\n";
+				$post['#PARAM'].="\t<li>\n\t\t<label><?php \$plxPlugin->lang(\"$name\");?> : </label>\n\t\t$input\n\t\t\n\t</li>\n";
 				$post['#SETPARAM'].="\t\t\$plxPlugin->setParam(\"$name\", plxUtils::strCheck($postname), \"$type\");\n";
+				$post['#MORE'].= "\t\t\"$name\"=>\"$name\", \n";
+				$post['#PROPERTIES'].="\t\tprivate \$$name;\n";
+				$post['#GETCONFIG'].="\t\t\$this->$name=\$this->getParam(\"$name\");\n";
 			}
 			
 		}
@@ -363,7 +389,7 @@ if (!empty($_POST)){
 </head>
 
 <body>
-	<header><img src="data:image/png;base64,<?php echo $template["icon.png"];?>" alt="logo"/><p>WDD Générateur de plugin pour pluxml v<?php echo $version ?></p></header>
+	<header><img src="data:image/png;base64,<?php echo $template["icon.png"];?>" alt="logo"/><p>WDD Générateur de plugin pour pluxml v<?php echo VERSION;?></p></header>
 	<section>
 		<form action="#" method="post" enctype="multipart/form-data">
 			<input type="hidden" name="MAX_FILE_SIZE" value="30000" />
